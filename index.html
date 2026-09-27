@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="World coffee from farm to cup to bin: growth, consumption and waste.">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Coffee Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EFEBE7; --surface:#FAF8F6; --ink:#1E1512; --muted:#6B5F58; --line:#D8CFC8;
+  --cherry:#A81C44; --bean:#62763C; --crema:#C98A45;
+  --r0:#9AA66A; --r1:#C9A26B; --r2:#8B5A33; --r3:#4E2E1C; --r4:#24150E;
+  --hero-bg:#1E1512; --hero-ink:#F3E9E0; --hero-muted:#B3A298; --hero-num:#E0A866; --hero-line:#3D2E27;
+  --grid:rgba(30,21,18,.09);
+  --display:"Saira Stencil One","Arial Narrow",Impact,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#15100D; --surface:#1F1814; --ink:#F1E8E1; --muted:#A8998F; --line:#3A2E28;
+    --cherry:#E4557E; --bean:#A9BC7B; --crema:#E0A866;
+    --r0:#A9B878; --r1:#D6AE77; --r2:#A8744A; --r3:#7A4E33; --r4:#4A3024;
+    --hero-bg:#0C0806; --hero-line:#2E231E; --grid:rgba(241,232,225,.08);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#15100D; --surface:#1F1814; --ink:#F1E8E1; --muted:#A8998F; --line:#3A2E28;
+  --cherry:#E4557E; --bean:#A9BC7B; --crema:#E0A866;
+  --r0:#A9B878; --r1:#D6AE77; --r2:#A8744A; --r3:#7A4E33; --r4:#4A3024;
+  --hero-bg:#0C0806; --hero-line:#2E231E; --grid:rgba(241,232,225,.08);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--body);padding-inline:16px}
+.wrap{max-width:1120px;margin:0 auto}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cherry);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:500 12px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--cherry)}
+.muted{color:var(--muted)}
+.small{font-size:13px;line-height:1.5}
+
+/* nav */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand svg{flex:none}
+.brand b{font:400 20px/1 var(--display);letter-spacing:.02em}
+.brand span{display:block;font:500 11px/1.2 var(--mono);color:var(--muted);letter-spacing:.06em}
+nav.links{display:flex;gap:18px;flex-wrap:wrap}
+nav.links a{font-size:14px;text-decoration:none;color:var(--muted)}
+nav.links a:hover{color:var(--ink)}
+@media (max-width:760px){nav.links{display:none}}
+
+/* hero clock */
+.hero{margin-top:24px;background:var(--hero-bg);color:var(--hero-ink);border-radius:6px;padding:32px clamp(20px,4vw,44px);display:grid;grid-template-columns:1.6fr 1fr;gap:32px;position:relative;overflow:hidden}
+.hero .eyebrow{color:var(--hero-num)}
+.clock{font:400 clamp(40px,7.5vw,88px)/1 var(--display);color:var(--hero-num);font-variant-numeric:tabular-nums;margin-top:14px;letter-spacing:.01em}
+.clock small{display:block;font:500 16px/1 var(--body);color:var(--hero-ink);margin-top:10px;letter-spacing:0}
+.hero p{color:var(--hero-muted);max-width:60ch;font-size:14px}
+.rates{display:flex;gap:36px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid var(--hero-line)}
+.rates b{display:block;font:500 22px/1.2 var(--mono);color:var(--hero-ink)}
+.rates span{font-size:13px;color:var(--hero-muted)}
+.bar-day{height:4px;background:var(--hero-line);border-radius:2px;margin-top:20px;overflow:hidden}
+.bar-day i{display:block;height:100%;background:linear-gradient(90deg,var(--r0),var(--r1),var(--r2));width:0}
+.side-clocks{display:flex;flex-direction:column;gap:22px;border-left:1px solid var(--hero-line);padding-left:32px}
+.side-clocks div b{display:block;font:400 clamp(30px,4vw,42px)/1.1 var(--display);color:var(--hero-ink);font-variant-numeric:tabular-nums}
+.side-clocks div b.hot{color:#E98AA4}
+.side-clocks .eyebrow{font-size:11px}
+@media (max-width:820px){.hero{grid-template-columns:1fr}.side-clocks{border-left:0;padding-left:0;border-top:1px solid var(--hero-line);padding-top:22px}}
+
+/* intro */
+.intro{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;margin-top:72px;align-items:end}
+.intro h1{font:400 clamp(44px,7.5vw,92px)/.95 var(--display);letter-spacing:.005em}
+.intro h1 em{font-style:normal;color:var(--cherry)}
+.intro p{font-size:18px;max-width:52ch}
+@media (max-width:820px){.intro{grid-template-columns:1fr;gap:20px}}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);margin-top:40px;border-top:2px solid var(--ink);border-bottom:1px solid var(--line)}
+.kpis div{padding:18px 16px 18px 0}
+.kpis div + div{padding-left:16px;border-left:1px solid var(--line)}
+.kpis b{display:block;font:400 clamp(28px,3.4vw,40px)/1.1 var(--display);font-variant-numeric:tabular-nums}
+.kpis span{font-size:13px;color:var(--muted);display:block;margin-top:4px;line-height:1.4}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.kpis div{border-left:0!important;padding-left:0!important;border-bottom:1px solid var(--line)}.kpis div:last-child{grid-column:1/-1;border-bottom:0}}
+
+/* sections */
+section.s{margin-top:96px;scroll-margin-top:70px}
+.s-head{display:grid;grid-template-columns:200px 1fr;gap:24px;margin-bottom:32px}
+.s-head .stamp{font:400 15px/1 var(--display);letter-spacing:.08em;border:1.5px solid var(--cherry);color:var(--cherry);padding:8px 10px 6px;align-self:start;justify-self:start;transform:rotate(-2deg)}
+.s-head h2{font:400 clamp(34px,5vw,56px)/1 var(--display)}
+.s-head p{margin-top:12px;max-width:62ch;color:var(--muted)}
+@media (max-width:720px){.s-head{grid-template-columns:1fr;gap:14px}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:24px}
+
+/* chart */
+.chart-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--cherry) 0 5px,transparent 5px 9px)!important}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{font:500 13px/1 var(--body);background:transparent;color:var(--muted);border:0;padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chart-box{position:relative;overflow-x:auto}
+.chart-box svg{display:block;width:100%;height:auto;min-width:560px}
+.chart-box svg text{fill:var(--muted);font:12px var(--mono)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font:12px/1.5 var(--mono);padding:8px 10px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:24px}
+.notes b{font:400 30px/1 var(--display);display:block;margin-bottom:6px}
+@media (max-width:720px){.notes{grid-template-columns:1fr}}
+
+/* bars */
+.two{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+@media (max-width:860px){.two{grid-template-columns:1fr}}
+.panel h3{font:600 15px/1.3 var(--body);margin-bottom:4px}
+.panel .sub{font-size:13px;color:var(--muted);margin-bottom:18px}
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar-row{display:grid;grid-template-columns:110px 1fr 76px;gap:10px;align-items:center;font-size:14px}
+.bar-row .track{height:18px;background:var(--grid);border-radius:2px;overflow:hidden}
+.bar-row .fill{height:100%;background:var(--r2);border-radius:2px;transition:width .6s ease}
+.bar-row .v{text-align:right;font:13px var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar-row.hl .fill{background:var(--cherry)}
+.split{display:flex;height:44px;border-radius:3px;overflow:hidden;margin-top:6px}
+.split div{display:flex;align-items:center;padding-inline:12px;color:#fff;font:500 13px var(--mono);white-space:nowrap}
+.stack{display:flex;height:56px;border-radius:3px;overflow:hidden}
+.stack div{position:relative;border-right:2px solid var(--surface)}
+.stack-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 18px;margin-top:14px;font-size:14px}
+.stack-legend span{display:flex;align-items:center;gap:8px}
+.stack-legend i{width:12px;height:12px;border-radius:2px;flex:none}
+.stack-legend em{font-style:normal;font-family:var(--mono);color:var(--muted);margin-left:auto}
+
+/* flow */
+.flow{display:flex;flex-direction:column;gap:18px}
+.stage{display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:center}
+.stage .lbl b{display:block;font-weight:600;font-size:15px}
+.stage .lbl span{font:13px var(--mono);color:var(--muted)}
+.stage .rib{display:flex;height:40px;border-radius:3px;overflow:hidden;transition:all .5s}
+.rib div{display:flex;align-items:center;padding-inline:10px;font:500 12px var(--mono);color:#fff;white-space:nowrap;overflow:hidden;min-width:0}
+.rib .w{background:repeating-linear-gradient(135deg,var(--cherry) 0 6px,color-mix(in srgb,var(--cherry) 80%,#000) 6px 12px)}
+@media (max-width:640px){.stage{grid-template-columns:1fr;gap:6px}}
+.flow-out{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);display:flex;gap:28px;flex-wrap:wrap}
+.flow-out div b{font:400 28px/1.1 var(--display);display:block}
+.flow-out div b.w{color:var(--cherry)}
+
+/* waste cards */
+.waste{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.waste article{background:var(--surface);padding:22px;display:flex;flex-direction:column;gap:8px}
+.waste article b{font:400 40px/1 var(--display);color:var(--cherry)}
+.waste article h3{font:600 16px/1.3 var(--body)}
+.waste article p{font-size:14px;color:var(--muted)}
+.waste article .src{margin-top:auto;padding-top:8px;font:11px var(--mono);color:var(--muted);letter-spacing:.03em}
+.tag{display:inline-block;font:500 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:4px 6px;border-radius:2px;border:1px solid currentColor;align-self:flex-start}
+.tag.rep{color:var(--bean)} .tag.mod{color:var(--crema)} .tag.der{color:var(--muted)}
+@media (max-width:900px){.waste{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.waste{grid-template-columns:1fr}}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:1fr 1.4fr;gap:32px;align-items:center}
+@media (max-width:820px){.calc{grid-template-columns:1fr}}
+.calc label{font-weight:600;display:block;margin-bottom:10px}
+.calc input[type=range]{width:100%;accent-color:var(--cherry)}
+.cups{font:400 64px/1 var(--display);color:var(--cherry)}
+.cup-icons{display:flex;gap:4px;flex-wrap:wrap;margin-top:10px;min-height:22px}
+.cup-icons svg{width:20px;height:20px}
+.calc-out{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.calc-out div{background:var(--surface);padding:16px}
+.calc-out b{font:400 30px/1.1 var(--display);display:block;font-variant-numeric:tabular-nums}
+.calc-out span{font-size:13px;color:var(--muted)}
+
+/* roast scale */
+.roast{display:grid;grid-template-columns:repeat(5,1fr);margin-top:8px}
+.roast div{height:10px}
+.roast-l{display:grid;grid-template-columns:repeat(5,1fr);font:11px var(--mono);color:var(--muted);margin-top:4px}
+
+/* climate */
+.climate{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.climate div{border-top:2px solid var(--ink);padding-top:14px}
+.climate b{font:400 clamp(40px,5vw,60px)/1 var(--display);display:block}
+.climate p{font-size:14px;color:var(--muted);margin-top:8px}
+@media (max-width:760px){.climate{grid-template-columns:1fr}}
+
+/* sources */
+.src-list{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.src-list div{background:var(--surface);padding:18px}
+.src-list b{display:block;font-size:14px;margin:6px 0 4px}
+.src-list p{font-size:13px;color:var(--muted)}
+@media (max-width:720px){.src-list{grid-template-columns:1fr}}
+footer{margin-block:64px 40px;padding-top:18px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="#top">
+    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><ellipse cx="15" cy="15" rx="10" ry="13" fill="var(--r3)" transform="rotate(25 15 15)"/><path d="M9 6 C17 12 13 18 21 24" stroke="var(--bg)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    <div><b>Coffee Atlas</b><span>Bean to cup to bin</span></div>
+  </a>
+  <nav class="links">
+    <a href="#growth">Growth</a><a href="#origin">Origin</a><a href="#demand">Demand</a><a href="#flow">Flow</a><a href="#waste">Waste</a><a href="#climate">Climate</a><a href="#sources">Sources</a>
+  </nav>
+</div></header>
+
+<main class="wrap" id="top">
+
+<!-- Clock -->
+<div class="hero">
+  <div>
+    <div class="eyebrow">2023/24-rate world coffee clock</div>
+    <div class="clock mono"><span id="cupsToday">0</span><small>cups today</small></div>
+    <p style="margin-top:14px">This is not a live measurement. It shows how many cups would have been drunk so far today (UTC) if the commonly cited 2.25 billion cups a day were spread evenly across 24 hours.</p>
+    <div class="rates">
+      <div><b>~2.25 bn</b><span>cups every 24 hours</span></div>
+      <div><b id="cupsSec">~26,000</b><span>cups every second</span></div>
+      <div><b>~337 kg</b><span>green coffee every second</span></div>
+    </div>
+    <div class="bar-day" aria-hidden="true"><i id="dayBar"></i></div>
+    <p class="small" style="margin-top:8px;font-size:12px">Resets at 00:00 UTC. The bar shows how far through the UTC day we are.</p>
+  </div>
+  <div class="side-clocks">
+    <div><div class="eyebrow">Green coffee used today</div><b id="greenToday">0 t</b><p class="small">At ICO's 177 M bags for 2023/24 (10.6 Mt a year).</p></div>
+    <div><div class="eyebrow">Spent grounds today</div><b class="hot" id="groundsToday">0 t</b><p class="small">At the widely cited ~6 Mt of dry spent grounds a year.</p></div>
+  </div>
+</div>
+
+<!-- Intro -->
+<div class="intro">
+  <h1>The world runs on <em>177 million</em> sacks.</h1>
+  <p>Coffee is traded in 60-kilogram sacks of green beans. This atlas follows those sacks from the farms that grow them, through the cups we drink, to the grounds, husks and cups we throw away.</p>
+</div>
+<div class="kpis">
+  <div><b>177 M</b><span>60-kg bags consumed, 2023/24</span></div>
+  <div><b>10.6 Mt</b><span>green coffee a year</span></div>
+  <div><b>+90%</b><span>consumption growth since 1990</span></div>
+  <div><b>~6 Mt</b><span>dry spent grounds a year</span></div>
+  <div><b>140 L</b><span>water behind a single cup</span></div>
+</div>
+
+<!-- Growth -->
+<section class="s" id="growth">
+  <div class="s-head">
+    <div class="stamp">LOT 01 · GROWTH</div>
+    <div><h2>From 93 to 177 million bags.</h2>
+    <p>World consumption has grown by roughly 2% a year for three decades, and has not fallen in any year shown. Production swings with Brazil's harvest cycle and weather, so supply and demand trade places year to year.</p></div>
+  </div>
+  <div class="panel">
+    <div class="chart-top">
+      <div class="legend">
+        <span><i style="background:var(--r3)"></i>Consumption</span>
+        <span><i style="background:var(--r0)"></i>Production</span>
+        <span id="projLegend"><i class="dash"></i>Illustrative 2% a year path</span>
+      </div>
+      <div class="seg" role="group" aria-label="Chart range">
+        <button id="rHist" aria-pressed="true">1990–2024</button>
+        <button id="rProj" aria-pressed="false">Out to 2050</button>
+      </div>
+    </div>
+    <div class="chart-box" id="growthBox"><svg id="growthSvg" viewBox="0 0 820 360" role="img" aria-label="Line chart of world coffee consumption and production"></svg><div class="tip" id="tip"></div></div>
+    <p class="small muted" style="margin-top:10px">Million 60-kg bags, coffee years. Rounded reconstruction of the ICO historical series; the 2050 path is a straight extrapolation, not a forecast.</p>
+  </div>
+  <div class="notes">
+    <div><b>~2.0%</b><p class="muted small">average yearly consumption growth, 1990 to 2023/24.</p></div>
+    <div><b>~2.4 bn</b><p class="muted small">cups a day implied by 10.6 Mt of green coffee, at 10 g of roasted coffee per cup. It agrees with the 2.25 bn figure usually quoted.</p></div>
+    <div><b>~300 M</b><p class="muted small">bags a year by 2050 if the historical 2% trend held. That is 1.7 times today.</p></div>
+  </div>
+</section>
+
+<!-- Origin -->
+<section class="s" id="origin">
+  <div class="s-head">
+    <div class="stamp">LOT 02 · ORIGIN</div>
+    <div><h2>Grown in the tropics, in few hands.</h2>
+    <p>Coffee grows in a belt between the Tropics of Cancer and Capricorn. Brazil and Vietnam together supply more than half the world's beans; around 12.5 million farms grow the rest, most of them smallholdings.</p></div>
+  </div>
+  <div class="two">
+    <div class="panel">
+      <h3>Production by country, 2023/24</h3>
+      <div class="sub">Million 60-kg bags, rounded</div>
+      <div class="bars" id="producers"></div>
+    </div>
+    <div class="panel" style="display:flex;flex-direction:column;gap:26px">
+      <div>
+        <h3>Two species</h3>
+        <div class="sub">Share of world production, 2023/24</div>
+        <div class="split"><div style="width:57%;background:var(--r2)">Arabica 57%</div><div style="width:43%;background:var(--r4)">Robusta 43%</div></div>
+        <p class="small muted" style="margin-top:12px">Arabica grows at altitude and dominates speciality coffee. Robusta tolerates heat and pests, carries more caffeine, and fills most instant coffee. Vietnam grows almost only robusta.</p>
+      </div>
+      <div>
+        <h3>The roast scale</h3>
+        <div class="sub">The colours used in this atlas, from raw bean to dark roast</div>
+        <div class="roast"><div style="background:var(--r0)"></div><div style="background:var(--r1)"></div><div style="background:var(--r2)"></div><div style="background:var(--r3)"></div><div style="background:var(--r4)"></div></div>
+        <div class="roast-l"><span>Green</span><span>Cinnamon</span><span>City</span><span>Full city</span><span>French</span></div>
+        <p class="small muted" style="margin-top:12px">Roasting drives off water and CO₂. A kilogram of green coffee leaves the roaster as about 830 g.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Demand -->
+<section class="s" id="demand">
+  <div class="s-head">
+    <div class="stamp">LOT 03 · DEMAND</div>
+    <div><h2>Where the cups are drunk.</h2>
+    <p>Europe is still the largest market, but most new growth comes from Asia and from producing countries themselves. Brazil is both the largest grower and the second-largest drinker.</p></div>
+  </div>
+  <div class="panel" style="margin-bottom:24px">
+    <h3>Consumption by region, 2022/23</h3>
+    <div class="sub">Share of world consumption (ICO regions)</div>
+    <div class="stack" id="regionStack"></div>
+    <div class="stack-legend" id="regionLegend"></div>
+  </div>
+  <div class="panel">
+    <div class="chart-top" style="margin-bottom:0">
+      <div><h3>Per person, per year</h3><div class="sub" style="margin-bottom:0">kg of green-coffee equivalent, approximate. The Nordic countries lead.</div></div>
+    </div>
+    <div class="bars" id="perCap" style="margin-top:18px"></div>
+  </div>
+</section>
+
+<!-- Flow -->
+<section class="s" id="flow">
+  <div class="s-head">
+    <div class="stamp">LOT 04 · FLOW</div>
+    <div><h2>Most of the harvest never reaches the cup.</h2>
+    <p>Follow the mass. It takes about 5.5 kg of ripe cherries to make 1 kg of green coffee, and only about a fifth of the roasted coffee dissolves into the drink. Everything shown in stripes leaves the chain as a residue.</p></div>
+  </div>
+  <div class="panel">
+    <div class="chart-top" style="margin-bottom:22px">
+      <div class="legend"><span><i style="background:var(--r2);height:10px"></i>Carried forward</span><span><i class="w" style="height:10px;background:var(--cherry)"></i>Residue or loss</span></div>
+      <div class="seg" role="group" aria-label="Flow scale">
+        <button id="fKg" aria-pressed="true">Per 1 kg green</button>
+        <button id="fWorld" aria-pressed="false">World, 2023/24</button>
+      </div>
+    </div>
+    <div class="flow" id="flowRows"></div>
+    <div class="flow-out" id="flowOut"></div>
+    <p class="small muted" style="margin-top:14px">Derived mass balance using typical ratios: 5.5:1 cherry to green, 17% roasting loss, 20% extraction yield. Real ratios vary with processing method, roast and brew.</p>
+  </div>
+</section>
+
+<!-- Waste -->
+<section class="s" id="waste">
+  <div class="s-head">
+    <div class="stamp">LOT 05 · WASTE</div>
+    <div><h2>What coffee leaves behind.</h2>
+    <p>Coffee waste has two very different ends: organic residues produced in huge volumes near farms and in cities, and packaging that is small per cup but hard to recycle.</p></div>
+  </div>
+  <div class="waste">
+    <article><span class="tag mod">Modelled</span><b>~6 Mt</b><h3>Spent coffee grounds</h3><p>Dry grounds left after brewing, every year. Most go to landfill, where they release methane. They can become compost, biofuel pellets or oil feedstock.</p><div class="src">Mussatto et al. 2011, widely cited</div></article>
+    <article><span class="tag der">Derived</span><b>~48 Mt</b><h3>Pulp, husk and mucilage</h3><p>Fresh cherry residue at origin. Pulp dumped near rivers can deoxygenate water. It can be composted or sold as cascara tea.</p><div class="src">Derived from 5.5:1 cherry-to-green ratio</div></article>
+    <article><span class="tag rep">Reported</span><b>2.5 bn</b><h3>Takeaway cups, UK alone</h3><p>Disposable coffee cups thrown away in the UK each year. Their plastic lining means fewer than 1 in 400 were recycled when counted.</p><div class="src">UK House of Commons EAC, 2018</div></article>
+    <article><span class="tag mod">Estimated</span><b>20–60 bn</b><h3>Single-serve capsules</h3><p>Aluminium and plastic pods used each year. Estimates vary widely. Aluminium pods are recyclable, but only if collected separately.</p><div class="src">Industry estimates; range shown</div></article>
+    <article><span class="tag rep">Reported</span><b>140 L</b><h3>Water per cup</h3><p>Total water footprint of one 125 ml cup, almost all of it rain and irrigation on the farm.</p><div class="src">Chapagain &amp; Hoekstra, Water Footprint Network</div></article>
+    <article><span class="tag mod">Modelled</span><b>28.5 kg</b><h3>CO₂e per kg of coffee</h3><p>Median farm-to-retail greenhouse gas footprint, driven by fertiliser and land-use change. Among the highest of any crop.</p><div class="src">Poore &amp; Nemecek 2018, via Our World in Data</div></article>
+  </div>
+
+  <div class="panel" style="margin-top:24px">
+    <div class="calc">
+      <div>
+        <label for="cupsInput">Your cups a day</label>
+        <div class="cups mono" id="cupsVal">2</div>
+        <input type="range" id="cupsInput" min="0" max="8" step="1" value="2">
+        <div class="cup-icons" id="cupIcons" aria-hidden="true"></div>
+      </div>
+      <div class="calc-out">
+        <div><b id="oGreen">8.8 kg</b><span>green coffee a year</span></div>
+        <div><b id="oGrounds">11.7 kg</b><span>wet spent grounds a year</span></div>
+        <div><b id="oWater">102,200 L</b><span>water footprint a year</span></div>
+        <div><b id="oCo2">250 kg</b><span>CO₂e a year, farm to retail</span></div>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:14px">Assumes 10 g roasted (12 g green) per cup and 16 g of wet grounds per cup. Milk, cups and brewing energy are not included.</p>
+  </div>
+</section>
+
+<!-- Climate -->
+<section class="s" id="climate">
+  <div class="s-head">
+    <div class="stamp">LOT 06 · CLIMATE</div>
+    <div><h2>Rising demand, shrinking land.</h2>
+    <p>Demand keeps growing while warming pushes arabica uphill. The land that suits coffee today will not be the land that suits it in 2050.</p></div>
+  </div>
+  <div class="climate">
+    <div><b>~50%</b><p>of land now suited to coffee could become unsuitable by 2050 under a high-emission scenario (Bunn et al., 2015).</p></div>
+    <div><b>12.5 M</b><p>farms grow coffee worldwide, around 95% of them smaller than 5 hectares (Fairtrade / ICO estimates).</p></div>
+    <div><b>1.7×</b><p>today's volume by 2050 if consumption keeps its historic 2% a year growth. See the dashed path above.</p></div>
+  </div>
+</section>
+
+<!-- Sources -->
+<section class="s" id="sources">
+  <div class="s-head">
+    <div class="stamp">LOT 07 · SOURCES</div>
+    <div><h2>Where the numbers come from.</h2>
+    <p>Every figure is labelled reported, modelled or derived. Values are rounded; check the original publication before quoting them.</p></div>
+  </div>
+  <div class="src-list">
+    <div><span class="tag rep">Primary</span><b>International Coffee Organization (ICO)</b><p>Coffee Market Reports and historical statistics. Powers consumption, production, species split and regional shares.</p></div>
+    <div><span class="tag der">Supplemental</span><b>USDA FAS · Coffee: World Markets and Trade</b><p>Twice-yearly supply and demand estimates by country. Useful cross-check for ICO production figures.</p></div>
+    <div><span class="tag mod">Environmental</span><b>Poore &amp; Nemecek (2018), Our World in Data</b><p>Greenhouse gas footprint per kilogram of food product.</p></div>
+    <div><span class="tag mod">Environmental</span><b>Water Footprint Network</b><p>Chapagain &amp; Hoekstra, water footprint of coffee: 140 L per cup.</p></div>
+    <div><span class="tag mod">Waste</span><b>Mussatto et al. (2011)</b><p>Production, composition and application of coffee and its industrial residues. Source of the ~6 Mt spent grounds figure.</p></div>
+    <div><span class="tag rep">Waste</span><b>UK House of Commons Environmental Audit Committee (2018)</b><p>Disposable Packaging: Coffee Cups. Source for UK cup counts and recycling rate.</p></div>
+    <div><span class="tag mod">Climate</span><b>Bunn et al. (2015), Climatic Change</b><p>A bitter cup: climate change profile of global production of arabica and robusta coffee.</p></div>
+    <div><span class="tag der">Derived</span><b>This atlas</b><p>Clock rates, cup counts, the mass-flow balance and the personal calculator are simple conversions of the figures above.</p></div>
+  </div>
+</section>
+
+<footer>Coffee Atlas · prototype · A source-first view of world coffee growth, consumption and waste. Series values are rounded reconstructions and may differ from the latest revised releases.</footer>
+</main>
+
+<script>
+(function(){
+const fmt = (n,d=0)=>n.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+
+/* ---------- clock ---------- */
+const CUPS_DAY = 2.25e9, GREEN_T_YR = 177e6*60/1000, GROUNDS_T_YR = 6e6;
+const cupsEl=document.getElementById('cupsToday'), gEl=document.getElementById('greenToday'), sEl=document.getElementById('groundsToday'), bar=document.getElementById('dayBar');
+document.getElementById('cupsSec').textContent='~'+fmt(Math.round(CUPS_DAY/86400/100)*100);
+function tick(){
+  const now=new Date();
+  const secs=now.getUTCHours()*3600+now.getUTCMinutes()*60+now.getUTCSeconds()+now.getUTCMilliseconds()/1000;
+  const f=secs/86400;
+  cupsEl.textContent=fmt(CUPS_DAY*f);
+  gEl.textContent=fmt(GREEN_T_YR/365*f)+' t';
+  sEl.textContent=fmt(GROUNDS_T_YR/365*f)+' t';
+  bar.style.width=(f*100).toFixed(2)+'%';
+}
+tick(); setInterval(tick,100);
+
+/* ---------- growth chart ---------- */
+const years=[1990,1995,2000,2005,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023];
+const cons =[93,97,105,117,136,139,142,146,150,152,157,161,164,164,166,170,173,177];
+const prod =[93,88,113,111,141,146,151,151,149,153,159,164,171,169,175,167,168,178];
+const svg=document.getElementById('growthSvg'), tip=document.getElementById('tip'), box=document.getElementById('growthBox');
+const W=820,H=360,M={l:52,r:20,t:16,b:34};
+let showProj=false;
+function draw(){
+  const x1=showProj?2050:2024, yMax=showProj?320:200;
+  const X=y=>M.l+(y-1990)/(x1-1990)*(W-M.l-M.r);
+  const Y=v=>H-M.b-(v/yMax)*(H-M.t-M.b);
+  let s='';
+  const step=showProj?50:25;
+  for(let v=0;v<=yMax;v+=step){s+=`<line x1="${M.l}" x2="${W-M.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${M.l-8}" y="${Y(v)+4}" text-anchor="end">${v}</text>`;}
+  const xt=showProj?[1990,2000,2010,2020,2030,2040,2050]:[1990,1995,2000,2005,2010,2015,2020];
+  xt.forEach(y=>{s+=`<text x="${X(y)}" y="${H-10}" text-anchor="middle">${y}</text>`});
+  const path=(arr)=>arr.map((v,i)=>(i?'L':'M')+X(years[i]).toFixed(1)+','+Y(v).toFixed(1)).join('');
+  // area under consumption
+  s+=`<path d="${path(cons)}L${X(2023)},${Y(0)}L${X(1990)},${Y(0)}Z" fill="var(--r3)" opacity=".10"/>`;
+  s+=`<path d="${path(prod)}" fill="none" stroke="var(--r0)" stroke-width="2.5" stroke-linejoin="round"/>`;
+  s+=`<path d="${path(cons)}" fill="none" stroke="var(--r3)" stroke-width="3" stroke-linejoin="round"/>`;
+  if(showProj){
+    let p=`M${X(2023)},${Y(177)}`;
+    for(let y=2024;y<=2050;y++)p+=`L${X(y).toFixed(1)},${Y(177*Math.pow(1.02,y-2023)).toFixed(1)}`;
+    s+=`<path d="${p}" fill="none" stroke="var(--cherry)" stroke-width="2.5" stroke-dasharray="6 5"/>`;
+    const v50=177*Math.pow(1.02,27);
+    s+=`<circle cx="${X(2050)}" cy="${Y(v50)}" r="4.5" fill="var(--cherry)"/><text x="${X(2050)-8}" y="${Y(v50)-10}" text-anchor="end" style="fill:var(--cherry)">~${Math.round(v50)} M</text>`;
+  }
+  s+=`<circle cx="${X(2023)}" cy="${Y(177)}" r="5" fill="var(--r3)" stroke="var(--surface)" stroke-width="2"/>`;
+  if(!showProj) s+=`<text x="${X(2023)-10}" y="${Y(177)-12}" text-anchor="end" style="fill:var(--ink)">177 M bags</text>`;
+  s+=`<text x="${M.l}" y="${M.t-2}" style="font-size:11px">M bags</text>`;
+  s+=`<line id="hov" y1="${M.t}" y2="${H-M.b}" stroke="var(--muted)" stroke-dasharray="2 3" opacity="0"/>`;
+  s+=`<rect id="hit" x="${M.l}" y="${M.t}" width="${W-M.l-M.r}" height="${H-M.t-M.b}" fill="transparent"/>`;
+  svg.innerHTML=s;
+  const hov=svg.querySelector('#hov'), hit=svg.querySelector('#hit');
+  function move(e){
+    const r=svg.getBoundingClientRect(), px=(e.clientX-r.left)/r.width*W;
+    const yr=1990+(px-M.l)/(W-M.l-M.r)*(x1-1990);
+    let i=0,best=1e9; years.forEach((y,j)=>{const d=Math.abs(y-yr); if(d<best){best=d;i=j}});
+    let html, xx;
+    if(showProj && yr>2024){const y=Math.round(yr);xx=X(y);html=`<b>${y}</b> path: ${Math.round(177*Math.pow(1.02,y-2023))} M bags`;}
+    else {xx=X(years[i]);html=`<b>${years[i]}/${String(years[i]+1).slice(2)}</b><br>Consumption ${cons[i]} M<br>Production ${prod[i]} M`;}
+    hov.setAttribute('x1',xx);hov.setAttribute('x2',xx);hov.setAttribute('opacity',1);
+    tip.innerHTML=html; tip.style.left=(xx/W*r.width+(r.left-box.getBoundingClientRect().left)+box.scrollLeft)+'px'; tip.style.top=(e.clientY-box.getBoundingClientRect().top)+'px'; tip.style.opacity=1;
+  }
+  hit.addEventListener('mousemove',move);
+  hit.addEventListener('mouseleave',()=>{tip.style.opacity=0;hov.setAttribute('opacity',0)});
+  document.getElementById('projLegend').hidden=!showProj;
+}
+const rH=document.getElementById('rHist'), rP=document.getElementById('rProj');
+rH.onclick=()=>{showProj=false;rH.setAttribute('aria-pressed','true');rP.setAttribute('aria-pressed','false');draw()};
+rP.onclick=()=>{showProj=true;rP.setAttribute('aria-pressed','true');rH.setAttribute('aria-pressed','false');draw()};
+draw();
+
+/* ---------- bars ---------- */
+function bars(el,data,max,unit,d=1){
+  el.innerHTML=data.map(r=>`<div class="bar-row${r[2]?' hl':''}"><span>${r[0]}</span><div class="track"><div class="fill" style="width:${(r[1]/max*100).toFixed(1)}%"></div></div><span class="v">${fmt(r[1],d)}${unit}</span></div>`).join('');
+}
+bars(document.getElementById('producers'),[
+  ['Brazil',66.3,1],['Vietnam',27.5],['Colombia',12.0],['Indonesia',9.7],['Ethiopia',8.4],['Uganda',6.4],['India',6.0],['Honduras',5.8],['Peru',4.2],['Rest of world',31.7]
+],70,' M');
+bars(document.getElementById('perCap'),[
+  ['Finland',12.0,1],['Norway',9.9],['Iceland',9.0],['Denmark',8.7],['Netherlands',8.4],['Sweden',8.2],['Switzerland',7.9],['Brazil',6.1],['Germany',5.5],['United States',4.4],['Japan',3.4],['United Kingdom',2.8],['China',0.2]
+],12.5,' kg');
+
+/* ---------- regions ---------- */
+const regions=[['Europe',31.5,'var(--r4)'],['Asia & Oceania',24,'var(--r3)'],['North America',18,'var(--r2)'],['South America',16,'var(--r1)'],['Africa',7,'var(--r0)'],['Central America & Mexico',3.5,'var(--bean)']];
+document.getElementById('regionStack').innerHTML=regions.map(r=>`<div style="width:${r[1]}%;background:${r[2]}" title="${r[0]} ${r[1]}%"></div>`).join('');
+document.getElementById('regionLegend').innerHTML=regions.map(r=>`<span><i style="background:${r[2]}"></i>${r[0]}<em>${r[1]}%</em></span>`).join('');
+
+/* ---------- flow ---------- */
+const stages=[
+  {n:'Ripe cherry',keep:1.0,kL:'Green bean',lose:4.5,lL:'Pulp, husk, mucilage, parchment'},
+  {n:'Green coffee',keep:0.83,kL:'Roasted',lose:0.17,lL:'Water, CO₂, chaff'},
+  {n:'Roasted coffee',keep:0.17,kL:'In cup',lose:0.66,lL:'Spent grounds (dry)'},
+];
+const flowRows=document.getElementById('flowRows'), flowOut=document.getElementById('flowOut');
+const WORLD=10.62; // Mt green
+let world=false;
+function drawFlow(){
+  const k=world?WORLD:1, u=world?' Mt':' kg';
+  const f=v=>fmt(v*k, world?1:2)+u;
+  flowRows.innerHTML=stages.map((s,i)=>{
+    const tot=s.keep+s.lose, w=tot/5.5*100;
+    const c=['var(--r0)','var(--r2)','var(--r3)'][i];
+    return `<div class="stage"><div class="lbl"><b>${s.n}</b><span>${f(tot)}</span></div>
+      <div class="rib" style="width:${Math.max(w,14)}%"><div style="flex:${s.keep};background:${c}" title="${s.kL} ${f(s.keep)}">${s.kL} ${f(s.keep)}</div><div class="w" style="flex:${s.lose}" title="${s.lL} ${f(s.lose)}">${s.lL} ${f(s.lose)}</div></div></div>`;
+  }).join('');
+  const cups=world? fmt(WORLD*0.83*1e12/10/1e9,0)+' bn' : '83';
+  flowOut.innerHTML=`<div><b>${cups}</b><span class="small muted">cups of coffee${world?' a year':''}</span></div>
+    <div><b>${fmt(0.17/5.5*100,1)}%</b><span class="small muted">of cherry mass ends up dissolved in the drink</span></div>
+    <div><b class="w">${f(4.5+0.66)}</b><span class="small muted">solid residue (pulp, husk and dry grounds)</span></div>`;
+}
+const fK=document.getElementById('fKg'), fW=document.getElementById('fWorld');
+fK.onclick=()=>{world=false;fK.setAttribute('aria-pressed','true');fW.setAttribute('aria-pressed','false');drawFlow()};
+fW.onclick=()=>{world=true;fW.setAttribute('aria-pressed','true');fK.setAttribute('aria-pressed','false');drawFlow()};
+drawFlow();
+
+/* ---------- calculator ---------- */
+const inp=document.getElementById('cupsInput');
+const cupSvg='<svg viewBox="0 0 20 20"><path d="M3 7h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z" fill="var(--r3)"/><path d="M14 9h1.5a2 2 0 0 1 0 4H14" fill="none" stroke="var(--r3)" stroke-width="1.6"/><path d="M6 2c0 2 2 2 2 4M10 2c0 2 2 2 2 4" stroke="var(--muted)" stroke-width="1.2" fill="none"/></svg>';
+function calc(){
+  const c=+inp.value, yr=c*365;
+  document.getElementById('cupsVal').textContent=c;
+  document.getElementById('cupIcons').innerHTML=cupSvg.repeat(c);
+  document.getElementById('oGreen').textContent=fmt(yr*0.012,1)+' kg';
+  document.getElementById('oGrounds').textContent=fmt(yr*0.016,1)+' kg';
+  document.getElementById('oWater').textContent=fmt(yr*140)+' L';
+  document.getElementById('oCo2').textContent=fmt(yr*0.012*28.5)+' kg';
+}
+inp.addEventListener('input',calc); calc();
+})();
+</script>
+
+</body>
+</html>
