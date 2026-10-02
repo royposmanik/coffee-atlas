@@ -54,7 +54,10 @@ header.top .wrap{display:flex;align-items:center;justify-content:space-between;g
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .brand svg{flex:none}
 .brand b{font:400 20px/1 var(--display);letter-spacing:.02em}
-.brand span{display:block;font:500 11px/1.2 var(--mono);color:var(--muted);letter-spacing:.06em}
+.brand span{display:block;font:500 11px/1.2 var(--mono);color:var(--muted);letter-spacing:.06em;margin-top:3px}
+.brand span a{text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
+.brand span a:hover{color:var(--cherry);text-decoration-color:currentColor}
+.brand > a{display:flex}
 nav.links{display:flex;gap:18px;flex-wrap:wrap}
 nav.links a{font-size:14px;text-decoration:none;color:var(--muted)}
 nav.links a:hover{color:var(--ink)}
@@ -198,10 +201,10 @@ footer{margin-block:64px 40px;padding-top:18px;border-top:1px solid var(--line);
 <body>
 
 <header class="top"><div class="wrap">
-  <a class="brand" href="#top">
-    <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><ellipse cx="15" cy="15" rx="10" ry="13" fill="var(--r3)" transform="rotate(25 15 15)"/><path d="M9 6 C17 12 13 18 21 24" stroke="var(--bg)" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-    <div><b>Coffee Atlas</b><span>Bean to cup to bin</span></div>
-  </a>
+  <div class="brand">
+    <a href="#top" aria-label="Coffee Atlas, back to top"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><ellipse cx="15" cy="15" rx="10" ry="13" fill="var(--r3)" transform="rotate(25 15 15)"/><path d="M9 6 C17 12 13 18 21 24" stroke="var(--bg)" stroke-width="2" fill="none" stroke-linecap="round"/></svg></a>
+    <div><a href="#top" style="text-decoration:none"><b>Coffee Atlas</b></a><span><a href="https://w2r-lab.vercel.app/index.html" target="_blank" rel="noopener">by W2R at the Technion</a></span></div>
+  </div>
   <nav class="links">
     <a href="#growth">Growth</a><a href="#origin">Origin</a><a href="#demand">Demand</a><a href="#flow">Flow</a><a href="#waste">Waste</a><a href="#climate">Climate</a><a href="#sources">Sources</a>
   </nav>
