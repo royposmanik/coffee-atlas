@@ -592,61 +592,136 @@ function bakeSvg(orig,clone){
   });
 }
 
-async function save(fig,btn){
-  const label=btn.innerHTML;
-  if(!window.jspdf){btn.textContent='PDF tools did not load. Reload and try again.';return;}
-  btn.disabled=true; btn.textContent='Preparing PDF…';
-  let tf=null;
+const MOBILE=matchMedia('(hover: none) and (pointer: coarse)').matches;
+const slug=fig=>'coffee-atlas-'+fig.dataset.fig.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+// Render one figure to a canvas, using the hidden desktop-width copy of the page
+async function renderFigure(fig){
+  const f=await getFrame(), w=f.contentWindow, d=f.contentDocument;
+  d.documentElement.setAttribute('data-theme','light');
+  syncState(d);
+  await d.fonts.ready;
+  const tf=d.querySelectorAll('[data-fig]')[[...document.querySelectorAll('[data-fig]')].indexOf(fig)];
+  tf.setAttribute('data-pdf-target','');
   try{
-    const f=await getFrame(), w=f.contentWindow, d=f.contentDocument;
-    d.documentElement.setAttribute('data-theme','light');
-    syncState(d);
-    await d.fonts.ready;
-    tf=d.querySelectorAll('[data-fig]')[[...document.querySelectorAll('[data-fig]')].indexOf(fig)];
-    tf.setAttribute('data-pdf-target','');
     const bg=w.getComputedStyle(tf).backgroundColor;
-    const canvas=await w.html2canvas(tf,{scale:2,backgroundColor:(bg==='rgba(0, 0, 0, 0)'||bg==='transparent')?'#EFEBE7':bg,useCORS:true,logging:false,
+    return await w.html2canvas(tf,{scale:2,backgroundColor:(bg==='rgba(0, 0, 0, 0)'||bg==='transparent')?'#EFEBE7':bg,useCORS:true,logging:false,
       ignoreElements:el=>el.classList&&(el.classList.contains('fig-actions')||el.classList.contains('tip')),
       onclone:doc=>{const cl=doc.querySelector('[data-pdf-target]'); if(!cl)return; bakeSvg(tf,cl);
         cl.querySelectorAll('.chart-box').forEach(b=>b.style.overflow='visible');}});
-    const [badge,tech]=await logos;
-    const {jsPDF}=window.jspdf; const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-    const W=297,H=210,m=14;
-    pdf.setProperties({title:'Coffee Atlas – '+fig.dataset.fig,author:LAB.name+', Technion',subject:fig.dataset.src,creator:LAB.site});
-    // header band
-    pdf.setFillColor(30,21,18); pdf.rect(0,0,W,30,'F');
-    if(badge){pdf.setFillColor(255,255,255);pdf.circle(m+10,15,10.6,'F');pdf.addImage(badge,'PNG',m,5,20,20,'w2r','FAST');}
-    pdf.setTextColor(243,233,224); pdf.setFont('helvetica','bold'); pdf.setFontSize(13); pdf.text(LAB.name,m+26,13);
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(200,186,176);
-    pdf.text(LAB.dept,m+26,18.5); pdf.text(LAB.uni,m+26,23);
-    if(tech){const th=16, tw=th*tech.width/tech.height; pdf.addImage(tech,'PNG',W-m-tw+4,7,tw,th,'technion','FAST');}
-    pdf.setFillColor(201,138,69); pdf.rect(0,30,W,1.2,'F');
-    // title
-    pdf.setTextColor(168,28,68); pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.text('COFFEE ATLAS',m,40.5);
-    pdf.setTextColor(30,21,18); pdf.setFontSize(16); pdf.text(fig.dataset.fig,m,48);
-    // figure, fitted to the page
-    const top=54, bottom=H-25, maxW=W-2*m, maxH=bottom-top;
-    let iw=maxW, ih=iw*canvas.height/canvas.width; if(ih>maxH){ih=maxH;iw=ih*canvas.width/canvas.height;}
-    pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',m+(maxW-iw)/2,top,iw,ih);
-    // footer
-    pdf.setDrawColor(216,207,200); pdf.setLineWidth(.3); pdf.line(m,H-20,W-m,H-20);
-    pdf.setFont('helvetica','normal'); pdf.setFontSize(7.5); pdf.setTextColor(107,95,88);
-    pdf.text(pdf.splitTextToSize('Source: '+fig.dataset.src,W-2*m),m,H-15.5);
-    pdf.text(LAB.site+'   ·   '+LAB.web+'   ·   '+LAB.email,m,H-7);
-    pdf.text('Generated '+new Date().toISOString().slice(0,10)+'   ·   © '+new Date().getFullYear()+' '+LAB.name+', Technion',W-m,H-7,{align:'right'});
-    pdf.save('coffee-atlas-'+fig.dataset.fig.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.pdf');
-    btn.textContent='Saved';
-  }catch(e){console.error(e); btn.textContent='Could not create the PDF. Try again.';}
-  finally{
-    if(tf)tf.removeAttribute('data-pdf-target'); btn.disabled=false;
-    setTimeout(()=>{btn.innerHTML=label},2500);
+  }finally{tf.removeAttribute('data-pdf-target');}
+}
+
+function buildPdf(fig,canvas,badge,tech){
+  const {jsPDF}=window.jspdf; const pdf=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const W=297,H=210,m=14;
+  pdf.setProperties({title:'Coffee Atlas – '+fig.dataset.fig,author:LAB.name+', Technion',subject:fig.dataset.src,creator:LAB.site});
+  // header band
+  pdf.setFillColor(30,21,18); pdf.rect(0,0,W,30,'F');
+  if(badge){pdf.setFillColor(255,255,255);pdf.circle(m+10,15,10.6,'F');pdf.addImage(badge,'PNG',m,5,20,20,'w2r','FAST');}
+  pdf.setTextColor(243,233,224); pdf.setFont('helvetica','bold'); pdf.setFontSize(13); pdf.text(LAB.name,m+26,13);
+  pdf.setFont('helvetica','normal'); pdf.setFontSize(8.5); pdf.setTextColor(200,186,176);
+  pdf.text(LAB.dept,m+26,18.5); pdf.text(LAB.uni,m+26,23);
+  if(tech){const th=16, tw=th*tech.width/tech.height; pdf.addImage(tech,'PNG',W-m-tw+4,7,tw,th,'technion','FAST');}
+  pdf.setFillColor(201,138,69); pdf.rect(0,30,W,1.2,'F');
+  // title
+  pdf.setTextColor(168,28,68); pdf.setFont('helvetica','bold'); pdf.setFontSize(8); pdf.text('COFFEE ATLAS',m,40.5);
+  pdf.setTextColor(30,21,18); pdf.setFontSize(16); pdf.text(fig.dataset.fig,m,48);
+  // figure, fitted to the page
+  const top=54, bottom=H-25, maxW=W-2*m, maxH=bottom-top;
+  let iw=maxW, ih=iw*canvas.height/canvas.width; if(ih>maxH){ih=maxH;iw=ih*canvas.width/canvas.height;}
+  pdf.addImage(canvas.toDataURL('image/jpeg',0.9),'JPEG',m+(maxW-iw)/2,top,iw,ih);
+  // footer
+  pdf.setDrawColor(216,207,200); pdf.setLineWidth(.3); pdf.line(m,H-20,W-m,H-20);
+  pdf.setFont('helvetica','normal'); pdf.setFontSize(7.5); pdf.setTextColor(107,95,88);
+  pdf.text(pdf.splitTextToSize('Source: '+fig.dataset.src,W-2*m),m,H-15.5);
+  pdf.text(LAB.site+'   ·   '+LAB.web+'   ·   '+LAB.email,m,H-7);
+  pdf.text('Generated '+new Date().toISOString().slice(0,10)+'   ·   © '+new Date().getFullYear()+' '+LAB.name+', Technion',W-m,H-7,{align:'right'});
+  return pdf;
+}
+
+// Same branding as the PDF, drawn onto a single JPEG for phones
+function wrap(ctx,text,maxW){const out=[];let line='';for(const word of text.split(' ')){const t=line?line+' '+word:word;if(ctx.measureText(t).width>maxW&&line){out.push(line);line=word;}else line=t;}if(line)out.push(line);return out;}
+function buildJpeg(fig,canvas,badge,tech){
+  const W=1800, m=84, ff='"Public Sans", system-ui, sans-serif';
+  const figW=W-2*m, figH=Math.round(figW*canvas.height/canvas.width);
+  const meas=document.createElement('canvas').getContext('2d');
+  meas.font='700 52px '+ff; const titleLines=wrap(meas,fig.dataset.fig,W-2*m);
+  meas.font='400 26px '+ff; const srcLines=wrap(meas,'Source: '+fig.dataset.src,W-2*m);
+  const headH=190, titleTop=headH+8+70, figTop=titleTop+30+titleLines.length*64, footTop=figTop+figH+50;
+  const H=footTop+48+srcLines.length*36+36+60;
+  const c=document.createElement('canvas'); c.width=W; c.height=H; const x=c.getContext('2d');
+  x.fillStyle='#FFFFFF'; x.fillRect(0,0,W,H);
+  // header band
+  x.fillStyle='#1E1512'; x.fillRect(0,0,W,headH);
+  if(badge){x.fillStyle='#FFFFFF'; x.beginPath(); x.arc(m+64,headH/2,68,0,Math.PI*2); x.fill(); x.drawImage(badge,m,headH/2-64,128,128);}
+  x.fillStyle='#F3E9E0'; x.font='700 46px '+ff; x.fillText(LAB.name,m+164,80);
+  x.fillStyle='#C8BAB0'; x.font='400 28px '+ff; x.fillText(LAB.dept,m+164,122); x.fillText(LAB.uni,m+164,158);
+  if(tech){const th=104, tw=th*tech.width/tech.height; x.drawImage(tech,W-m-tw+24,headH/2-th/2,tw,th);}
+  x.fillStyle='#C98A45'; x.fillRect(0,headH,W,8);
+  // title
+  x.fillStyle='#A81C44'; x.font='700 26px '+ff; x.fillText('COFFEE ATLAS',m,titleTop);
+  x.fillStyle='#1E1512'; x.font='700 52px '+ff; titleLines.forEach((l,i)=>x.fillText(l,m,titleTop+62+i*64));
+  // figure
+  x.drawImage(canvas,m,figTop,figW,figH);
+  // footer
+  x.fillStyle='#D8CFC8'; x.fillRect(m,footTop,W-2*m,2);
+  x.fillStyle='#6B5F58'; x.font='400 26px '+ff;
+  srcLines.forEach((l,i)=>x.fillText(l,m,footTop+48+i*36));
+  const fy=footTop+48+srcLines.length*36+36;
+  x.fillText(LAB.site+'   ·   '+LAB.web+'   ·   '+LAB.email,m,fy);
+  x.textAlign='right'; x.fillText('© '+new Date().getFullYear()+' '+LAB.name+', Technion',W-m,fy); x.textAlign='left';
+  return new Promise(ok=>c.toBlob(ok,'image/jpeg',0.92));
+}
+
+function download(blob,name){const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
+
+// Phones: open the share sheet so the image can go straight to Photos / Gallery
+async function shareImage(file,btn){
+  try{await navigator.share({files:[file],title:'Coffee Atlas'}); return 'saved';}
+  catch(e){
+    if(e.name==='AbortError')return 'cancel';
+    if(e.name==='NotAllowedError'){btn._ready=file; return 'tap';}  // rendering took too long; the browser wants a fresh tap
+    throw e;
   }
+}
+
+async function save(fig,btn){
+  const label=btn.dataset.label, reset=()=>setTimeout(()=>{btn.innerHTML=icon+label},2500);
+  if(btn._ready){
+    const file=btn._ready; btn._ready=null;
+    try{const r=await shareImage(file,btn); btn.textContent=r==='saved'?'Saved':label;}
+    catch(e){download(file,file.name); btn.textContent='Downloaded';}
+    reset(); return;
+  }
+  btn.disabled=true; btn.textContent=MOBILE?'Preparing image…':'Preparing PDF…';
+  let waiting=false;
+  try{
+    const canvas=await renderFigure(fig);
+    const [badge,tech]=await logos;
+    if(MOBILE){
+      const blob=await buildJpeg(fig,canvas,badge,tech);
+      const file=new File([blob],slug(fig)+'.jpg',{type:'image/jpeg'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        const r=await shareImage(file,btn);
+        if(r==='tap'){btn.innerHTML=icon+'Image ready · tap to save'; waiting=true;}
+        else btn.textContent=r==='saved'?'Saved':label;
+      } else {download(blob,file.name); btn.textContent='Downloaded';}
+    } else {
+      if(!window.jspdf)throw new Error('PDF library did not load');
+      buildPdf(fig,canvas,badge,tech).save(slug(fig)+'.pdf');
+      btn.textContent='Saved';
+    }
+  }catch(e){console.error(e); btn.textContent=MOBILE?'Could not create the image. Try again.':'Could not create the PDF. Try again.';}
+  finally{btn.disabled=false; if(!waiting)reset();}
 }
 
 if(!/[?&]pdf=1/.test(location.search))document.querySelectorAll('[data-fig]').forEach((fig,i)=>{
   const bar=document.createElement('div'); bar.className='fig-actions';
   const b=document.createElement('button'); b.type='button'; b.className='pdf-btn'; b.id='pdf-'+i;
-  b.innerHTML=icon+'Save as PDF'; b.setAttribute('aria-label','Save "'+fig.dataset.fig+'" as PDF');
+  b.dataset.label=MOBILE?'Save image':'Save as PDF';
+  b.innerHTML=icon+b.dataset.label;
+  b.setAttribute('aria-label',MOBILE?'Save an image of "'+fig.dataset.fig+'" to your phone':'Save "'+fig.dataset.fig+'" as PDF');
   b.addEventListener('click',()=>save(fig,b));
   bar.appendChild(b);
   if(fig.classList.contains('panel'))fig.appendChild(bar); else fig.insertAdjacentElement('afterend',bar);
